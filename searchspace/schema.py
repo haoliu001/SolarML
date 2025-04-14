@@ -14,10 +14,7 @@ def build_schema() -> Dict[str, ValueType]:
       keys.append(Discrete("sense1",bounds=(10,globalVar.MAX_SENSE1)))
       keys.append(Discrete("sense2",bounds=(18,globalVar.MAX_SENSE2)))
       keys.append(Discrete("sense3",bounds=(10,globalVar.MAX_SENSE3)))
-    elif globalVar.appName == 'cifar10':
-      keys.append(Discrete("sense1",bounds=(10,globalVar.MAX_SENSE1)))
-      keys.append(Discrete("sense2",bounds=(4,globalVar.MAX_SENSE2)))
-      keys.append(Discrete("sense3",bounds=(3,globalVar.MAX_SENSE3)))
+
 
     keys.append(Discrete("num-conv-blocks", bounds=(1, globalVar.MAX_CONV_BLOCKS)))
     for c in range(globalVar.MAX_CONV_BLOCKS): 

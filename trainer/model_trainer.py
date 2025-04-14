@@ -38,21 +38,11 @@ class ModelTrainer:
           val = dataset.validation_dataset() \
               .batch(batch_size) \
               .prefetch(tf.data.experimental.AUTOTUNE)
-        elif globalVar.appName == 'cifar10':
-          train = dataset.train_dataset() \
-              .shuffle(batch_size * 8) \
-              .batch(batch_size) \
-              .prefetch(tf.data.experimental.AUTOTUNE)
-
-          val = dataset.validation_dataset() \
-              .batch(batch_size) \
-              .prefetch(tf.data.experimental.AUTOTUNE)
         else:
            assert('no app name')
 
 
 
-        # TODO: check if this works, make sure we're excluding the last layer from the student
         if self.pruning and self.distillation:
             raise NotImplementedError()
 
@@ -63,7 +53,6 @@ class ModelTrainer:
 
             t, a = self.distillation.temperature, self.distillation.alpha
 
-            # Assemble a parallel model with the teacher and student
             i = tf.keras.Input(shape=dataset.input_shape)
             cxent = tf.keras.losses.CategoricalCrossentropy()
 
@@ -87,14 +76,12 @@ class ModelTrainer:
         if globalVar.appName == "solar":
           model.compile(optimizer=self.config.optimizer(),
                         loss=loss, metrics=[accuracy])
-        elif globalVar.appName == "speech" or globalVar.appName == 'cifar10':
+        elif globalVar.appName == "speech":
           model.compile(optimizer=self.config.optimizer(), metrics=["accuracy"],loss=SparseCategoricalCrossentropy(from_logits=True))
 
 
-        # TODO: adjust metrics by class weight?
         class_weight = {k: v for k, v in enumerate(self.dataset.class_weight())} \
             if self.config.use_class_weight else None
-        # epochs = epochs or self.config.epochs
         epochs = globalVar.epoch_param
         callbacks = self.config.callbacks()
         check_logs_from_epoch = 0
@@ -119,9 +106,8 @@ class ModelTrainer:
             "val_error": 1.0 - max(log.history["val_accuracy"]),
             "test_error": 1.0 - test_acc,
             "pruned_weights": pruning_cb.weights if pruning_cb else None
-            # "energy": energy_tot
           }
-        elif globalVar.appName == 'speech' or globalVar.appName == 'cifar10':
+        elif globalVar.appName == 'speech':
           print("train.shape before modelFit: ",dataset.input_shape)
           log = model.fit(train, epochs=epochs, validation_data=val, 
                         verbose=1 if debug_mode() else 2,
@@ -131,9 +117,7 @@ class ModelTrainer:
               .batch(batch_size) \
               .prefetch(tf.data.experimental.AUTOTUNE)
           _, test_acc = model.evaluate(test, verbose=0)
-          # later to add condition when to use this funcgtion
 
-        #   quantised_accuracy(model, dataset,1,5,1)
 
           return {
             "val_error": 1.0 - max(log.history["val_accuracy"]),
@@ -142,5 +126,3 @@ class ModelTrainer:
           }
 
 
-        # print(log.history["val_accuracy"])
-        # print(log.history["val_accuracy"][check_logs_from_epoc:])

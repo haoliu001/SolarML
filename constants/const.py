@@ -89,12 +89,6 @@ class globalVar:
                 optimizer=lambda: tfa.optimizers.SGDW(learning_rate=0.005, momentum=0.9, weight_decay=4e-5),
                 callbacks=lambda: []
             )
-        elif cls.appName == 'cifar10':
-            from data.cifar10 import CIFAR10
-            cls.MAX_SENSE1 = 100
-            cls.MAX_SENSE2 = 12
-            cls.MAX_SENSE3 = 9
-            cls.training_config = TrainingConfig(dataset=CIFAR10(),optimizer=lambda: tfa.optimizers.SGDW(learning_rate=0.01, momentum=0.9, weight_decay=1e-5),batch_size=128,epochs=130, callbacks=lambda: [LearningRateScheduler(lr_schedule)])
         else:
             cls.training_config = None
             cls.MAX_SENSE1 = 0

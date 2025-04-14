@@ -69,19 +69,7 @@ def try_count_flops(model: Union[tf.Module, tf.keras.Model],
                     BS_flops += layer.total_float_ops
                 elif 'conv2d' in layer.name:
                     conv_flops += layer.total_float_ops
-                # else:
-                #     print('layer {0}, layer_num {1}'.format(layer.name, layer.total_float_ops),file=open('Layer_flops_NE_unlocking2.txt', 'a'))
-            # print("dense flops {0}; depth {1}; maxpool {2}; bs {3}; conv {4}; macs {5}".format(dense_flops,depth_flops,maxpool_flops,BS_flops,conv_flops, flops.total_float_ops),file=open('Layer_flops_NE_digits2.txt', 'a'))
-
             return flops.total_float_ops, dense_flops,depth_flops,maxpool_flops,BS_flops,conv_flops
-        # except Exception as e:  # pylint: disable=broad-except
-        #     logging.info(
-        #         'Failed to count model FLOPs with error %s, because the build() '
-        #         'methods in keras layers were not called. This is probably because '
-        #         'the model was not feed any input, e.g., the max train step already '
-        #         'reached before this run.', e)
-        #     print("failed to count model FLOPs with error")
-        #     return None
     else:
       print("models do not contain inputs")
     return None
@@ -93,7 +81,6 @@ def quantised_accuracy(model: tf.keras.Model, dataset: Dataset,
     log.info("Computing quantised test accuracy...")
 
     if output_file is not None and batch_size != 1:
-        print("Model output is requested, so the batch_size will be set to 1.")
         num_representative_batches = num_representative_batches * batch_size
         batch_size = 1
     def representative_dataset_gen_solar():
@@ -119,10 +106,6 @@ def quantised_accuracy(model: tf.keras.Model, dataset: Dataset,
         converter.representative_dataset = representative_dataset_gen
     elif globalVar.appName == 'solar':
         converter.representative_dataset = representative_dataset_gen_solar
-    elif globalVar.appName == 'cifar10':
-        input_shape = (32,32,3)
-        converter.representative_dataset = \
-                lambda: [[np.random.random((1,) + input_shape).astype("float32")] for _ in range(5)]
     converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
     converter.inference_input_type = tf.int8 # change to int
     converter.inference_output_type = tf.int8
@@ -147,7 +130,6 @@ def peak_memory_usage(g: Graph, exclude_weights=True, exclude_inputs=True):
 
     @lru_cache(maxsize=None)
     def mem(tensors):
-        # Computes the peak memory usage of a runtime system that computes all tensors in a set `tensors`.
         constants = [t for t in tensors if t.producer is None]
         if constants:
             upstream_mem_use, op_order = mem(frozenset(t for t in tensors if t.producer is not None))
@@ -157,12 +139,8 @@ def peak_memory_usage(g: Graph, exclude_weights=True, exclude_inputs=True):
 
         min_use = sys.maxsize  # A reasonably large integer
         op_order = []
-        # For each of tensors in our working set, we try to unapply the operator that produced it
         for t in tensors:
             rest = tensors - {t}
-            # We constrain the search to never consider evaluating an operator (`t.producer`) more than once ---
-            # so we prevent cases where we consider unapplying `t.producer` but it's actually necessary for other
-            # tensors in the working set.
             if any(t in r.predecessors for r in rest):
                 continue
             inputs = frozenset(t.producer.inputs)
@@ -173,9 +151,7 @@ def peak_memory_usage(g: Graph, exclude_weights=True, exclude_inputs=True):
                 return all(o in operators for o in i.consumers if o != t.producer)
 
             if isinstance(t.producer, Add) and any(i.shape == t.shape and last_use_point(i) for i in inputs):
-                # When evaluating Add, instead of creating a separate output buffer, we can accumulate into one
-                # of its inputs, provided it's no longer used anywhere else (either not consumed elsewhere or its
-                # other consumers have already been evaluated).
+
                 current_mem_use = sum_of_tensor_sizes(new_set)
             else:
                 current_mem_use = sum_of_tensor_sizes(new_set | {t})

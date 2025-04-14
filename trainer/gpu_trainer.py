@@ -80,8 +80,6 @@ class GPUTrainer:
             sampleSize = 0
           energy_sample = chan * 5.1246115 + reso * 20.29759982 - rate * 29.00385246 - feature_size * 0.14318719 + sampleSize*5.62146279 + 875.1937633603479
           print("Rate: %d, energy: %f" % (rate, energy_sample))
-        elif globalVar.appName == 'cifar10':
-          energy_sample = 100
         else:
           energy_sample = 0
           print('no appName match')

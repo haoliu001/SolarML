@@ -62,7 +62,6 @@ class AgingEvoSearch:
 
     def maybe_save_state(self, save_every):
         if len(self.history) % save_every == 0:
-            # orignal save into pickle
             file = self.root_dir / f"{self.experiment_name}_agingevosearch_state.pickle"
             self.save_state(file.as_posix())
 
@@ -206,7 +205,6 @@ class AgingEvoSearch:
                 value = self.acc_e_loss_fn()(element)
                 print('index is {0}, val is {1}, ele is {2}'.format(index, value, element), file=open(filename, 'a'))
             parent = max(sample, key=self.acc_e_loss_fn())
-            # index_parent = np.argmax(sample)
             print(' parent architecture is : {0}'.format( parent),file=open(filename, 'a'))
 
 
@@ -276,8 +274,6 @@ class AgingEvoSearch:
                     self.population.append(info)
                     self.history.append(info)
                     self.maybe_save_state(save_every)
-                    # resource_features = [peak_memory_usage(rg), model_size(rg, sparse=unstructured_sparsity),
-                        #  inference_latency(rg, compute_weight=1, mem_access_weight=0),energy_tot]
                     print("turn {0} ok in constraints is : {1}, energy is {2}".format(turn, features, energy_tot),file=open(globalVar.search_name, 'a'))
                     turn += 1
                     if energy_tot < globalVar.e_min:
