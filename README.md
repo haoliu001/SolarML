@@ -1,5 +1,8 @@
 # 🌞 SolarML: Optimizing Sensing and Inference for Solar-Powered TinyML Platforms
 
+> 🚧 This project is still under active development. Some sections of this README may be incomplete. Thanks for your patience!
+
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 [![TinyML](https://img.shields.io/badge/TinyML-Energy%20Aware-green)]()
