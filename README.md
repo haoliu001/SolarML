@@ -10,14 +10,14 @@ This project explores *energy-aware design* under constrained solar harvesting c
 
 ---
 
-## ✨ Features
+<!-- ## ✨ Features
 
 - ⚡ Joint optimization of sensor sampling and model performance
 - 🔍 NAS (Neural Architecture Search) for energy-constrained ML models
 - ☀️ Designed for solar-powered, intermittently powered systems
 - 📉 Adaptable to energy budgets and environmental dynamics
 
----
+--- -->
 
 ## 📦 Dependencies
 
