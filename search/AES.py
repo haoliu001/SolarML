@@ -155,11 +155,11 @@ class AgingEvoSearch:
                 metric = acc - globalVar.lambda_factor * e 
                 print("acc, e, metric in  mutate_sample is: ",acc,e,metric)
                 grid_score_list.append(metric)
-                grid_candidate_list.append(copy.deepcopy(point.arch.architecture)) # type: ignore ## see if it really works
+                grid_candidate_list.append(copy.deepcopy(point.arch.architecture)) # type: ignore 
                 print('rate {0}, am_reso {1}, sp_reso {2}, acc {3}, e {4}, metric {5}'.format(s1, s2, s3, acc, e, metric))
         best_index = np.argmax(np.array(grid_score_list))
         print('best index {0}'.format(best_index))
-        point.arch.architecture = grid_candidate_list[best_index] # type: ignore # update architecture, need to check
+        point.arch.architecture = grid_candidate_list[best_index] # type: ignore
         info = tr.evaluate(point)
         print(" best sample_candidate is : {0}, info is {1}".format( point.arch.architecture, info),file=open(globalVar.evolve_name, 'a'))  # type: ignore
         return info

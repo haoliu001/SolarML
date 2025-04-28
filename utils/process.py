@@ -217,7 +217,6 @@ def inference_latency(g: Union[Graph, OperatorDesc, List[OperatorDesc]],
             if op.use_bias: # type: ignore
                 loads += n * out_dim
         if isinstance(op, Add):
-            # TODO: not precise when inputs are of different shapes
             num_terms = len(op.inputs) # type: ignore
             elems_per_term = np.prod(op.output.shape) # type: ignore
             loads = num_terms * elems_per_term
